@@ -188,8 +188,9 @@
         <script type="module" src="js/main.js"></script>
     </head>
     <body>
-        <!-- Semantic Crawlable DOM Content (Rendered behind the 3D WebGL canvas for search crawlers & accessibility) -->
-        <main id="seo-crawler-content" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: normal; border: 0; opacity: 0.001; pointer-events: none; z-index: 0;">
+        <!-- Text version of the portfolio for search engines and screen readers.
+             Hidden on screen with .visually-hidden; the 3D terminal shows the same content. -->
+        <main id="seo-crawler-content" class="visually-hidden">
             <header>
                 <h1>Matthew Nader Fawzy — Communication and Information Engineer</h1>
                 <p>Communication and Information Engineer | Computer Vision, AI, Robotics & Software</p>
@@ -281,17 +282,18 @@
         </main>
 
         <noscript>
-            <div style="color: #00ff00; background: #000; padding: 40px; font-family: monospace; line-height: 1.6;">
+            <div class="noscript-message">
                 <h1>Matthew Nader Fawzy | Communication and Information Engineer</h1>
                 <p>Specializing in Computer Vision, Artificial Intelligence, Robotics, and Software Engineering.</p>
                 <p>JavaScript and WebAssembly are required to experience the full 3D retro CRT terminal interface.</p>
-                <p>Explore Matthew Nader Fawzy's open-source projects on GitHub: <a href="https://github.com/MatthewNader2" style="color: #00ffff;">https://github.com/MatthewNader2</a></p>
-                <p>LinkedIn: <a href="https://www.linkedin.com/in/matthew-nader-11b57b1a5/" style="color: #00ffff;">https://www.linkedin.com/in/matthew-nader-11b57b1a5/</a></p>
-                <p>Wuzzuf: <a href="https://wuzzuf.net/me/Matthew-Nader-6464401c16" style="color: #00ffff;">https://wuzzuf.net/me/Matthew-Nader-6464401c16</a></p>
+                <p>Explore Matthew Nader Fawzy's open-source projects on GitHub: <a href="https://github.com/MatthewNader2">https://github.com/MatthewNader2</a></p>
+                <p>LinkedIn: <a href="https://www.linkedin.com/in/matthew-nader-11b57b1a5/">https://www.linkedin.com/in/matthew-nader-11b57b1a5/</a></p>
+                <p>Wuzzuf: <a href="https://wuzzuf.net/me/Matthew-Nader-6464401c16">https://wuzzuf.net/me/Matthew-Nader-6464401c16</a></p>
             </div>
         </noscript>
 
-        <!-- Interactive 3D WebAssembly Application Root -->
+        <!-- The app. js/main.js fills #root with the WebGL and CSS3D renderers;
+             the elements below are moved into the 3D scene or float above it. -->
         <div id="root">
             <div class="ui-layer">
                 <div id="settings-button" class="settings-button" role="button" aria-label="System configuration" tabindex="-1" hidden>

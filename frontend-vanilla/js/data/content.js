@@ -1,5 +1,7 @@
-// Bundled portfolio content: the single source of data for the terminal.
-export const FALLBACK_PORTFOLIO_DATA = {
+// Portfolio content shown by the terminal: about, contact, education, skills,
+// projects, experience and awards. Edit this file to change what the terminal
+// says. data/index.js formats it (colors, wrapping, ASCII art) for the engine.
+export const PORTFOLIO_CONTENT = {
   about: {
     content: `NAME: Matthew Nader Fawzy
 ROLE: Communication and Information Engineer | Computer Vision & Robotics

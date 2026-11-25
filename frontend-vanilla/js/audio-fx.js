@@ -1,4 +1,15 @@
-// Web Audio API procedural retro sound synthesizer (zero asset weight).
+// Retro sound effects, synthesized with the Web Audio API (no audio files).
+//
+//   playKeyClick()     every typed key
+//   playEnterKey()     running a command
+//   playTabComplete()  a Tab completion
+//   playDegauss()      the CRT "power on" hum at boot
+//   setSoundEnabled()  the AUDIO FX switch
+//
+// Each sound is built from two ingredients: a short burst of filtered noise
+// (the "click") and an oscillator sliding down in pitch (the "thump").
+// Browsers block audio until the user interacts with the page, so nothing
+// plays before the first key press or click.
 
 let audioCtx = null;
 let soundEnabled = true;

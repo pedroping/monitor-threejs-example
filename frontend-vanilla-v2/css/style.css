@@ -1,3 +1,15 @@
+/*
+ * Styles for the 3D CRT portfolio.
+ *
+ *   1. Base: font, page, hidden helper
+ *   2. Layers: the WebGL canvas and the CSS3D layer stacked on top
+ *   3. UI layer: gear button, settings panel, switches
+ *   4. Screen: the element CSS3D places on the TV, with the portfolio iframe
+ *   5. CRT effects: scanlines and flicker (the CRT FX switch)
+ */
+
+/* === 1. Base === */
+
 @font-face {
     font-family: "Pixelmix";
     src: url("../assets/pixelmix.ttf") format("truetype");
@@ -22,6 +34,8 @@ html {
     font-family: sans-serif;
     padding: 40px;
 }
+
+/* === 2. Layers === */
 
 /* Scene mount: holds the WebGL/CSS3D renderers, the UI layer and the screen. */
 #root {
@@ -50,7 +64,9 @@ html {
     z-index: 0;
 }
 
-/* --- UI LAYER (gear button, settings panel) --- */
+/* === 3. UI layer (gear button, settings panel) === */
+
+/* Covers the page but only its children take clicks. */
 .ui-layer {
     position: absolute;
     top: 0;
@@ -140,7 +156,7 @@ html {
     left: 15px;
 }
 
-/* --- SCREEN --- */
+/* === 4. Screen === */
 /* 1024x768 is the viewport the portfolio sees inside the iframe. The padding
    keeps its edges (e.g. the taskbar) clear of the curved bezel. Hidden until
    the TV model loads and the CSS3D renderer takes it over. */
@@ -173,7 +189,7 @@ html {
     background-color: #000;
 }
 
-/* --- CRT EFFECTS (CSS only) --- */
+/* === 5. CRT effects (toggled with the CRT FX switch) === */
 
 /* Scanlines and glass vignette drawn over the iframe; clicks pass through. */
 .crt-effects::before {

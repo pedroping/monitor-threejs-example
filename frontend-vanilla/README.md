@@ -13,10 +13,13 @@ frontend-vanilla/
 ├── index.html            # SEO head + JSON-LD, crawlable content, app markup, import map
 ├── css/style.css         # All styles (cursors, CRT effects, settings panel, context menu)
 ├── js/
-│   ├── main.js           # Entry point: app state, settings, command dispatch, startup
-│   ├── terminal.js       # xterm.js wrapper (line editing, tab completion, history, mobile input)
+│   ├── main.js           # Entry point: creates every part and connects them (start reading here)
+│   ├── terminal/         # The xterm terminal:
+│   │   ├── index.js            # line editor, keyboard, clipboard, phone keyboard
+│   │   ├── autocomplete.js     # Tab completion and grey suggestions (pure functions)
+│   │   └── buffer.js           # select words/lines and find links by on-screen cell
 │   ├── scene/            # Three.js scene, one file per responsibility:
-│   │   ├── index.js            # builds the scene + render loop (start reading here)
+│   │   ├── index.js            # builds the scene + render loop
 │   │   ├── renderers.js        # WebGL + CSS3D renderers, resize
 │   │   ├── room.js             # background photo and lights
 │   │   ├── dust.js             # floating dust (InstancedMesh)
@@ -24,13 +27,20 @@ frontend-vanilla/
 │   │   ├── occlusion.js        # clip-path so the terminal stays inside the bezel
 │   │   ├── camera-intro.js     # opening camera move
 │   │   └── terminal-picking.js # mouse -> terminal cell raycasting
-│   ├── interaction.js    # Raycast mouse/touch: selection, links, copy/paste context menu
-│   ├── data.js           # Portfolio JSON for the engine, ASCII art, live GitHub repo merge
+│   ├── data/             # What the terminal shows:
+│   │   ├── content.js          # the portfolio text itself (edit this one)
+│   │   ├── index.js            # builds the JSON sent to the engine
+│   │   ├── formatters.js       # colors and wrapping per section, skill icons
+│   │   ├── ascii-art.js        # images -> ASCII art, placeholder expansion
+│   │   ├── github.js           # adds public GitHub repos to the projects
+│   │   └── ansi.js             # ANSI colors and word wrapping
+│   ├── interaction.js    # Mouse/touch on the terminal: selection, links
+│   ├── context-menu.js   # Right-click Copy / Paste menu
+│   ├── settings.js       # Gear button and the DUST / CRT / AUDIO switches
 │   ├── boot.js           # Simulated apt boot sequence
 │   ├── audio-fx.js       # Procedural Web Audio sound effects
-│   ├── fallback-data.js  # Portfolio content (about, skills, projects, experience, ...)
 │   └── wasm/             # Emscripten output (engine.js + engine.wasm), unchanged
-├── data/projects.autogen.json  # Snapshot written by scripts/sync-github.mjs
+├── data/projects.autogen.json  # Snapshot written by scripts/sync-github.mjs (not read by the app)
 ├── scripts/              # Node maintenance scripts (see below)
 ├── assets/, basis/, crt_tv_basis.glb, AppIcon.ico
 ├── about/, projects/*/   # Static SEO pages
@@ -84,7 +94,7 @@ To upgrade, change the version in the URLs in `index.html`.
 
 ## Data
 
-Portfolio content lives in `js/fallback-data.js`. At startup `js/data.js`
+Portfolio content lives in `js/data/content.js`. At startup `js/data/index.js`
 formats it for the terminal (word wrapping, ANSI colors, ASCII skill icons
 rendered from Devicon SVGs) and appends any public repositories from the
 GitHub API that are not already listed. If the GitHub request fails, the bundled
@@ -96,7 +106,8 @@ projects are used as they are. The result is passed as a JSON string to the WASM
 Run with Node 18+ (they use the built-in `fetch`); no dependencies:
 
 - `node scripts/sync-github.mjs`: fetches the public repositories of
-  `MatthewNader2` and writes them to `data/projects.autogen.json`.
+  `MatthewNader2` and writes them to `data/projects.autogen.json`. The app does
+  not read that file (it asks the GitHub API live); it is a snapshot for reference.
 - `node scripts/submit-indexnow.mjs`: submits the sitemap URLs to IndexNow
   (Bing, Yandex, ...). The key file is `4cf603a9bb6e4d6289f74915a492eac3.txt`
   at the site root and must be reachable on the submitted host. The host

@@ -13,9 +13,10 @@ frontend-vanilla-v2/
 ├── index.html            # Page head, settings panel, screen element with the iframe, import map
 ├── css/style.css         # Layout, settings panel, screen size and CRT overlay effects
 ├── js/
-│   ├── main.js           # Entry point: settings panel, intro timing, scene startup
+│   ├── main.js           # Entry point: intro timing, settings, scene startup (start reading here)
+│   ├── settings.js       # Gear button and the DUST FX / CRT FX switches
 │   └── scene/            # Three.js scene, one file per responsibility:
-│       ├── index.js          # builds the scene + render loop (start reading here)
+│       ├── index.js          # builds the scene + render loop
 │       ├── renderers.js      # WebGL + CSS3D renderers, resize
 │       ├── room.js           # background photo and lights
 │       ├── dust.js           # floating dust (InstancedMesh)

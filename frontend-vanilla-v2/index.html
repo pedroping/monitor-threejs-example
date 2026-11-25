@@ -7,6 +7,7 @@
         <link rel="icon" type="image/x-icon" href="/os/favicon.ico" />
         <meta name="theme-color" content="#000000" />
 
+        <!-- Link preview (Open Graph) -->
         <meta property="og:title" content="Windows Xp" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://pedro-ping-portfolio.vercel.app/assets/images/win-xp.png" />
@@ -17,6 +18,8 @@
             content="Welcome to My Personal Portfolio! My portfolio is a nostalgic tribute to the classic Windows XP interface, blending the beloved aesthetics of the early 2000s with contemporary web development techniques. Dive into a world where retro meets innovation, showcasing my projects, and skills in a unique environment."
         />
 
+        <!-- Styles, and Three.js from a CDN. The import map lets the JS write
+             `import ... from "three"` with no bundler. -->
         <link rel="stylesheet" href="css/style.css" />
         <script type="importmap">
         {
@@ -33,7 +36,10 @@
             <p class="noscript">JavaScript is required. You can also open the portfolio directly: <a href="/os/">/os/</a></p>
         </noscript>
 
+        <!-- The app. js/main.js fills #root with the WebGL and CSS3D renderers;
+             the elements below are moved into the 3D scene or float above it. -->
         <div id="root">
+            <!-- Gear button + settings panel, drawn over the scene (js/settings.js) -->
             <div class="ui-layer">
                 <div id="settings-button" class="settings-button" role="button" aria-label="Display settings" tabindex="-1" hidden>
                     <svg viewBox="0 0 24 24" fill="currentColor" height="24" width="24" aria-hidden="true">
@@ -54,7 +60,8 @@
                 </div>
             </div>
 
-            <!-- Portfolio screen: mapped onto the TV screen by the CSS3D renderer once the model loads -->
+            <!-- Portfolio screen: mapped onto the TV screen by the CSS3D renderer once
+                 the model loads (js/scene/). The iframe gets a 1024x768 viewport. -->
             <div id="screen" class="screen crt-effects">
                 <iframe id="screen-frame" class="screen-frame" src="/os/" title="Pedro's Windows XP portfolio" allow="clipboard-read; clipboard-write; fullscreen"></iframe>
             </div>
