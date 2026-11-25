@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://matthew-nader.web.app/sitemap.xml

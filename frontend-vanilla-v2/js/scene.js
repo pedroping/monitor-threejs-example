@@ -1,17 +1,16 @@
-// Three.js scene: CRT TV model (WebGL) with the DOM terminal mapped onto its
-// screen (CSS3D), clip-path occlusion, dust particles and the camera intro.
+// Three.js scene: CRT TV model (WebGL) with the portfolio iframe mapped onto
+// its screen (CSS3D), clip-path occlusion, dust particles and the camera intro.
 import * as THREE from "three";
 import { CSS3DRenderer, CSS3DObject } from "three/addons/renderers/CSS3DRenderer.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { KTX2Loader } from "three/addons/loaders/KTX2Loader.js";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 
-// Terminal element size in CSS pixels and its inner padding.
-const TERM_WIDTH = 1024;
-const TERM_HEIGHT = 768;
-const TERM_PADDING = 50;
+// Screen element size in CSS pixels (matches .screen in css/style.css).
+const SCREEN_WIDTH = 1024;
+const SCREEN_HEIGHT = 768;
 
-// Fine-tuning of the terminal plane relative to the TV screen mesh.
+// Fine-tuning of the screen plane relative to the TV screen mesh.
 const SCREEN_ADJUST = {
   offsetX: 0,
   offsetY: 0,
@@ -37,7 +36,7 @@ const PARTICLE_COUNT = 400;
 const PARTICLE_PALETTE = [0xffffff, 0xdddddd, 0xeeeecc, 0xddeeff, 0xfffacd];
 
 // --- Occlusion helpers ---
-// The TV screen is curved while the terminal is a flat rectangle, so its
+// The TV screen is curved while the screen element is a flat rectangle, so its
 // corners would poke out of the bezel. We project the screen mesh to 2D,
 // rasterize it into a mask, trace the mask outline (Moore-Neighbor), simplify
 // it (Ramer-Douglas-Peucker) and apply it as a CSS clip-path polygon.
@@ -331,7 +330,7 @@ function createModelLoader(webglRenderer) {
   return gltfLoader;
 }
 
-/** Hides the screen mesh (the terminal replaces it) and restyles the casing. */
+/** Hides the screen mesh (the iframe replaces it) and restyles the casing. */
 function prepareTvModel(tv) {
   let screenMesh = null;
   let meshIndex = 0;
@@ -358,8 +357,8 @@ function prepareTvModel(tv) {
   return screenMesh;
 }
 
-/** Places the CSS3D terminal, clip mesh and event plane over the TV screen. */
-function alignToScreen(screenMesh, cssObject, overlays) {
+/** Places the CSS3D screen element and the clip mesh over the TV screen. */
+function alignToScreen(screenMesh, cssObject, clipMesh) {
   if (!screenMesh?.geometry) return;
 
   screenMesh.updateWorldMatrix(true, false);
@@ -369,7 +368,7 @@ function alignToScreen(screenMesh, cssObject, overlays) {
 
   cssObject.position.copy(screenBox.getCenter(new THREE.Vector3()));
   cssObject.quaternion.copy(screenMesh.getWorldQuaternion(new THREE.Quaternion()));
-  cssObject.scale.set((size.x / TERM_WIDTH) * 0.995, (size.y / TERM_HEIGHT) * 0.995, 1);
+  cssObject.scale.set((size.x / SCREEN_WIDTH) * 0.995, (size.y / SCREEN_HEIGHT) * 0.995, 1);
   cssObject.position.x += SCREEN_ADJUST.offsetX;
   cssObject.position.y -= SCREEN_ADJUST.offsetY;
   cssObject.translateZ(SCREEN_ADJUST.offsetZ);
@@ -379,20 +378,17 @@ function alignToScreen(screenMesh, cssObject, overlays) {
   cssObject.scale.x *= SCREEN_ADJUST.scaleX;
   cssObject.scale.y *= SCREEN_ADJUST.scaleY;
 
-  for (const overlay of overlays) {
-    overlay.position.copy(cssObject.position);
-    overlay.quaternion.copy(cssObject.quaternion);
-    overlay.scale.set(size.x * SCREEN_ADJUST.scaleX, size.y * SCREEN_ADJUST.scaleY, 1);
-    overlay.updateMatrixWorld();
-  }
+  clipMesh.position.copy(cssObject.position);
+  clipMesh.quaternion.copy(cssObject.quaternion);
+  clipMesh.scale.set(size.x * SCREEN_ADJUST.scaleX, size.y * SCREEN_ADJUST.scaleY, 1);
+  clipMesh.updateMatrixWorld();
 }
 
 /**
- * Builds the scene inside `mount` and maps `terminalEl` onto the TV screen.
- * Returns `pickTerminalCell(clientX, clientY)`, which raycasts a viewport
- * point onto the screen and returns `{ col, row, dims }` or null.
+ * Builds the scene inside `mount` and maps `screenEl` onto the TV screen.
+ * The camera starts close on the screen and pulls back once `isIntroDone()`.
  */
-export function createScene({ mount, terminalEl, terminal, getSettings, isBootFinished }) {
+export function createScene({ mount, screenEl, getSettings, isIntroDone }) {
   const scene = new THREE.Scene();
   const cssScene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -404,12 +400,6 @@ export function createScene({ mount, terminalEl, terminal, getSettings, isBootFi
   addLights(scene);
   const particles = createDustParticles(scene);
 
-  // Invisible plane over the screen, used to raycast pointer positions.
-  const eventPlane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ visible: false }));
-  eventPlane.name = "eventPlaneForTerminal";
-  scene.add(eventPlane);
-
-  let modelReady = false;
   let rebuildClipPath = () => {};
   let resizeTimer = null;
 
@@ -422,10 +412,7 @@ export function createScene({ mount, terminalEl, terminal, getSettings, isBootFi
     cssRenderer.domElement.style.width = `${clientWidth}px`;
     cssRenderer.domElement.style.height = `${clientHeight}px`;
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      rebuildClipPath();
-      terminal.fit();
-    }, 150);
+    resizeTimer = setTimeout(() => rebuildClipPath(), 150);
   };
   window.addEventListener("resize", onWindowResize);
 
@@ -440,9 +427,9 @@ export function createScene({ mount, terminalEl, terminal, getSettings, isBootFi
     group.add(tv);
     scene.add(group);
 
-    requestAnimationFrame(() => terminalEl.classList.add("is-visible"));
+    requestAnimationFrame(() => screenEl.classList.add("is-visible"));
 
-    const cssObject = new CSS3DObject(terminalEl);
+    const cssObject = new CSS3DObject(screenEl);
     cssScene.add(cssObject);
 
     const clipMesh = screenMesh.clone();
@@ -450,14 +437,13 @@ export function createScene({ mount, terminalEl, terminal, getSettings, isBootFi
     scene.add(clipMesh);
 
     // Computed once; the TV never moves.
-    alignToScreen(screenMesh, cssObject, [clipMesh, eventPlane]);
-    modelReady = true;
+    alignToScreen(screenMesh, cssObject, clipMesh);
 
     rebuildClipPath = () => {
       const clipPath = buildClipPathFromMesh(clipMesh, camera, webglRenderer.domElement);
       if (clipPath) {
-        terminalEl.style.clipPath = clipPath;
-        terminalEl.style.webkitClipPath = clipPath;
+        screenEl.style.clipPath = clipPath;
+        screenEl.style.webkitClipPath = clipPath;
       }
     };
 
@@ -470,7 +456,7 @@ export function createScene({ mount, terminalEl, terminal, getSettings, isBootFi
         camera.lookAt(END_LOOK_AT);
         return;
       }
-      if (!isBootFinished()) return;
+      if (!isIntroDone()) return;
 
       transitionProgress = Math.min(1, transitionProgress + TRANSITION_SPEED);
       const t = 1 - Math.pow(1 - transitionProgress, 3); // ease-out cubic
@@ -496,37 +482,4 @@ export function createScene({ mount, terminalEl, terminal, getSettings, isBootFi
     onWindowResize();
     animate();
   });
-
-  const raycaster = new THREE.Raycaster();
-  const pointer = new THREE.Vector2();
-
-  return {
-    pickTerminalCell(clientX, clientY) {
-      if (!modelReady) return null;
-
-      const rect = mount.getBoundingClientRect();
-      pointer.x = ((clientX - rect.left) / mount.clientWidth) * 2 - 1;
-      pointer.y = -((clientY - rect.top) / mount.clientHeight) * 2 + 1;
-
-      eventPlane.updateMatrixWorld();
-      raycaster.setFromCamera(pointer, camera);
-      const [hit] = raycaster.intersectObject(eventPlane);
-      if (!hit) return null;
-
-      const localX = hit.uv.x * TERM_WIDTH;
-      const localY = (1 - hit.uv.y) * TERM_HEIGHT;
-
-      const dims = terminal.getDimensions();
-      const cellWidth = (TERM_WIDTH - TERM_PADDING * 2) / dims.cols;
-      const cellHeight = (TERM_HEIGHT - TERM_PADDING * 2) / dims.rows;
-
-      const col = Math.floor((localX - TERM_PADDING) / cellWidth + 0.5);
-      const row = Math.floor((localY - TERM_PADDING) / cellHeight);
-      return {
-        col: Math.max(0, Math.min(col, dims.cols - 1)),
-        row: Math.max(0, Math.min(row, dims.rows - 1)),
-        dims,
-      };
-    },
-  };
 }
