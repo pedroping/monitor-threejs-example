@@ -1,0 +1,48 @@
+# --- Dependencies ---
+node_modules/
+
+# --- Build Output ---
+dist/
+build/
+
+# --- Environment & Secrets ---
+.env
+.env.local
+.env.*.local
+
+# --- Firebase & Backend Configuration ---
+# Hides hosting config and security rules
+firebase.json
+firestore.rules
+firestore.indexes.json
+.firebaserc
+
+# --- API Keys / Secrets ---
+frontend/src/firebaseConfig.js
+
+# --- Engine / C Build Artifacts ---
+*.o
+*.obj
+engine/src/portfolio_engine
+engine/src/lex.yy.c
+engine/src/parser.tab.c
+engine/src/parser.tab.h
+
+# --- Logs ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+firebase-debug.log*
+
+# --- IDE / Editor ---
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db

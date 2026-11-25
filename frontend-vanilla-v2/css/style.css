@@ -1,0 +1,322 @@
+@font-face {
+    font-family: "Pixelmix";
+    src: url("../assets/pixelmix.ttf") format("truetype");
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* --- BASE STYLES & APP-WIDE CUSTOM CURSOR --- */
+body,
+html {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #000;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M2 2L9.5 21.5L12.5 13.5L20.5 10.5L2 2Z' fill='%2300ff00' stroke='%23002200' stroke-width='1.5'/%3E%3Cpolygon points='4,4 10,18 12.5,12.5 18,10' fill='%2333ff33'/%3E%3C/svg%3E") 2 2, default !important;
+}
+
+/* Scene mount: holds the WebGL/CSS3D renderers, the UI layer and the terminal. */
+#root {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    touch-action: none;
+    background-color: #000;
+}
+
+.render-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#css-renderer {
+    pointer-events: none;
+    z-index: 1;
+}
+
+#webgl-renderer {
+    pointer-events: auto;
+    z-index: 0;
+}
+
+/* --- TERMINAL SPECIFIC CUSTOM CURSOR (Inside CRT Screen) --- */
+.xterm,
+.xterm-screen,
+.xterm-rows,
+.xterm-viewport {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24' viewBox='0 0 20 24'%3E%3Cline x1='10' y1='2' x2='10' y2='22' stroke='%2300ff00' stroke-width='2'/%3E%3Cline x1='4' y1='2' x2='16' y2='2' stroke='%2300ff00' stroke-width='2'/%3E%3Cline x1='4' y1='22' x2='16' y2='22' stroke='%2300ff00' stroke-width='2'/%3E%3Crect x='8' y='9' width='4' height='6' fill='%2333ff33'/%3E%3C/svg%3E") 10 12, text !important;
+}
+
+/* Interactive Element Hover Cursor (Links & Buttons) */
+body.force-pointer,
+body.force-pointer *,
+a,
+button,
+[role="button"],
+[role="switch"],
+.force-pointer {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M8 2v10l-2.5-2.5a2 2 0 0 0-2.8 2.8l6.3 6.3a4 4 0 0 0 2.8 1.2h6.2a4 4 0 0 0 4-4V10a2 2 0 0 0-4 0v1h-1V7a2 2 0 0 0-4 0v4h-1V4a2 2 0 0 0-4 0v-2a2 2 0 0 0-4 0z' fill='%2300ff00' stroke='%23002200' stroke-width='1.2'/%3E%3C/svg%3E") 8 2, pointer !important;
+}
+
+/* --- MINIMAL TRANSPARENT SCROLLBAR (No Track Background) --- */
+.xterm .xterm-viewport::-webkit-scrollbar {
+    width: 3px;
+    background: transparent !important;
+}
+
+.xterm .xterm-viewport::-webkit-scrollbar-track {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.xterm .xterm-viewport::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 0, 0.45);
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+    border-radius: 3px;
+    border: none !important;
+}
+
+.xterm .xterm-viewport::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 0, 0.85);
+    box-shadow: 0 0 8px rgba(0, 255, 0, 1);
+}
+
+/* --- UI LAYER (gear button, settings panel) --- */
+.ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+.settings-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #00ff00;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    pointer-events: auto;
+    outline: none;
+}
+
+.settings-button:hover {
+    opacity: 1;
+}
+
+.settings-panel {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    width: 200px;
+    background-color: rgba(0, 10, 0, 0.95);
+    border: 1px solid #00ff00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+    padding: 15px;
+    font-family: "Pixelmix", monospace;
+    font-size: 12px;
+    color: #00ff00;
+    pointer-events: auto;
+}
+
+.settings-title {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #004400;
+    padding-bottom: 5px;
+    font-weight: bold;
+}
+
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.settings-row:last-child {
+    margin-bottom: 5px;
+}
+
+/* Toggle switch; state comes from aria-checked. */
+.switch {
+    width: 30px;
+    height: 15px;
+    border: 1px solid #00ff00;
+    position: relative;
+    background: transparent;
+    outline: none;
+}
+
+.switch-knob {
+    width: 13px;
+    height: 13px;
+    background-color: #004400;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: left 0.2s;
+}
+
+.switch[aria-checked="true"] {
+    background: rgba(0, 255, 0, 0.2);
+}
+
+.switch[aria-checked="true"] .switch-knob {
+    background-color: #00ff00;
+    left: 15px;
+}
+
+/* --- CONTEXT MENU --- */
+.context-menu {
+    position: fixed;
+    background-color: #000;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    font-family: "Pixelmix", monospace;
+    font-size: 14px;
+    z-index: 100000;
+    padding: 5px 0;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    min-width: 120px;
+    pointer-events: auto;
+}
+
+.context-menu-item {
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.context-menu-item:hover {
+    background-color: #003300;
+}
+
+/* --- TERMINAL --- */
+/* Hidden until the TV model loads and the CSS3D renderer takes it over. */
+.terminal-screen {
+    width: 1024px;
+    height: 768px;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-in;
+    background-color: black;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.terminal-screen.is-visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+.terminal-region {
+    width: 100%;
+    height: 100%;
+    padding: 50px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* Invisible textarea that brings up the on-screen keyboard on mobile. */
+.terminal-mobile-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 0;
+    border: none;
+    outline: none;
+    resize: none;
+    color: transparent;
+    background-color: transparent;
+    caret-color: transparent;
+}
+
+.terminal-xterm {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+/* --- CRT / GLITCH & VIGNETTE EFFECTS (CSS ONLY) --- */
+
+/* 1. Scanlines & Screen Glass Glare Overlay */
+.crt-scanlines::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background:
+        radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 60%, rgba(0, 15, 0, 0.4) 100%),
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
+        linear-gradient(
+            90deg,
+            rgba(255, 0, 0, 0.04),
+            rgba(0, 255, 0, 0.02),
+            rgba(0, 0, 255, 0.04)
+        );
+    z-index: 10;
+    background-size:
+        100% 100%,
+        100% 2px,
+        3px 100%;
+    pointer-events: none;
+}
+
+/* 2. Text Phosphor Aura & Flicker */
+@keyframes textShadow {
+    0% {
+        text-shadow:
+            0.5px 0 1px rgba(0, 30, 255, 0.4),
+            -0.5px 0 1px rgba(255, 0, 80, 0.25),
+            0 0 3px rgba(0, 255, 0, 0.6);
+    }
+    5% {
+        text-shadow:
+            2px 0 1px rgba(0, 30, 255, 0.4),
+            -2px 0 1px rgba(255, 0, 80, 0.25),
+            0 0 4px rgba(0, 255, 0, 0.8);
+    }
+    100% {
+        text-shadow:
+            0.5px 0 1px rgba(0, 30, 255, 0.4),
+            -0.5px 0 1px rgba(255, 0, 80, 0.25),
+            0 0 3px rgba(0, 255, 0, 0.6);
+    }
+}
+
+@keyframes crt-flicker {
+    0% { opacity: 0.98; }
+    10% { opacity: 0.95; }
+    20% { opacity: 0.99; }
+    50% { opacity: 0.96; }
+    80% { opacity: 0.99; }
+    100% { opacity: 0.97; }
+}
+
+.crt-effects {
+    animation: crt-flicker 0.18s infinite;
+}
+
+.crt-effects .xterm-rows {
+    animation: textShadow 1.8s infinite;
+}
