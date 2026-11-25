@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkportifolio=self.webpackChunkportifolio||[]).push([[399],{8399:(s,n,o)=>{o.r(n),o.d(n,{default:()=>e});var t=o(467);const e=[{path:"",loadComponent:(l=(0,t.A)(function*(){return(yield Promise.all([o.e(139),o.e(517),o.e(161),o.e(709)]).then(o.bind(o,7709))).WorkspacePageComponent}),function(){return l.apply(this,arguments)})}];var l}}]);
