@@ -1,6 +1,6 @@
 // Entry point: wires the terminal, 3D scene, settings panel and WASM engine.
 import { createTerminal } from "./terminal.js";
-import { createScene } from "./scene.js";
+import { createScene } from "./scene/index.js";
 import { initInteraction } from "./interaction.js";
 import { buildPortfolioData, expandPlaceholders } from "./data.js";
 import { runBootSequence } from "./boot.js";
@@ -82,7 +82,6 @@ for (const toggle of settingsPanel.querySelectorAll("[role=switch]")) {
 
 function finishBoot() {
   state.isBooting = false;
-  window.bootSequenceFinished = true;
   gearButton.hidden = false;
   gearButton.tabIndex = 0;
 }

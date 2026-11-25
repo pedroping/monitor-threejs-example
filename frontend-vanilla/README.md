@@ -15,7 +15,15 @@ frontend-vanilla/
 ├── js/
 │   ├── main.js           # Entry point: app state, settings, command dispatch, startup
 │   ├── terminal.js       # xterm.js wrapper (line editing, tab completion, history, mobile input)
-│   ├── scene.js          # Three.js scene, TV model, clip-path occlusion, particles, render loop
+│   ├── scene/            # Three.js scene, one file per responsibility:
+│   │   ├── index.js            # builds the scene + render loop (start reading here)
+│   │   ├── renderers.js        # WebGL + CSS3D renderers, resize
+│   │   ├── room.js             # background photo and lights
+│   │   ├── dust.js             # floating dust (InstancedMesh)
+│   │   ├── tv-model.js         # load the TV, fit the terminal onto its screen
+│   │   ├── occlusion.js        # clip-path so the terminal stays inside the bezel
+│   │   ├── camera-intro.js     # opening camera move
+│   │   └── terminal-picking.js # mouse -> terminal cell raycasting
 │   ├── interaction.js    # Raycast mouse/touch: selection, links, copy/paste context menu
 │   ├── data.js           # Portfolio JSON for the engine, ASCII art, live GitHub repo merge
 │   ├── boot.js           # Simulated apt boot sequence

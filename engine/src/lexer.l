@@ -1,13 +1,23 @@
+/*
+ * lexer.l - splits a command line into tokens for parser.y.
+ *
+ * Flex tries the rules from top to bottom and picks the longest match, so
+ * keywords like "cat" win over the generic identifier rule further down.
+ * Tokens that carry text (T_IDENTIFIER, T_STRING) hand the parser a malloc'd
+ * copy in yylval.str; the parser frees it.
+ */
 %{
 #include "parser.tab.h"
 #include <string.h>
 #include <stdlib.h>
 %}
 
+/* One string per call, no unput/input helpers needed. */
 %option noyywrap nounput noinput
 
 %%
 
+ /* --- Commands (aliases return the same token) --- */
 "cat"           { return T_CAT; }
 "echo"          { return T_ECHO; }
 "help"          { return T_HELP; }
@@ -22,6 +32,7 @@
 "history"       { return T_HISTORY; }
 "exit"          { return T_EXIT; }
 
+ /* --- Portfolio section names --- */
 "about"         { return T_SEC_ABOUT; }
 "projects"      { return T_SEC_PROJECTS; }
 "skills"        { return T_SEC_SKILLS; }
@@ -30,9 +41,10 @@
 "awards"        { return T_SEC_AWARDS; }
 "contact"       { return T_SEC_CONTACT; }
 
+ /* --- "Quoted text": passed on without the quotes --- */
 \"([^\"\\]|\\.)*\" {
     size_t len = strlen(yytext);
-    char *s = (char*)malloc(len - 1);
+    char *s = (char*)malloc(len - 1); /* len - 2 characters + '\0' */
     if (s) {
         strncpy(s, yytext + 1, len - 2);
         s[len - 2] = '\0';
@@ -43,15 +55,18 @@
     return T_STRING;
 }
 
+ /* --- Any other word (file names, unknown sections, echo text) --- */
 [a-zA-Z0-9_\-\.\/@]+ {
     yylval.str = strdup(yytext);
     return T_IDENTIFIER;
 }
 
+ /* --- Whitespace and line endings --- */
 [ \t]+          ;
 \r              ;
 \n              { return T_EOL; }
 
+ /* --- Any other single character becomes a one-letter word --- */
 .               {
     yylval.str = strdup(yytext);
     return T_IDENTIFIER;

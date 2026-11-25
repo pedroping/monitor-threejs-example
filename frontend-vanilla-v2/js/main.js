@@ -1,6 +1,6 @@
 // Entry point: maps the portfolio iframe onto the TV screen and wires the
 // settings panel. The portfolio itself is the Angular app built into /os/.
-import { createScene } from "./scene.js";
+import { createScene } from "./scene/index.js";
 
 // How long the camera stays close on the screen after the portfolio loads.
 const INTRO_HOLD_MS = 1200;
